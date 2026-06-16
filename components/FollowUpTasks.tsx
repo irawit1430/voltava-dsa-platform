@@ -114,7 +114,7 @@ function TaskCard({ task, onToggle, onDelete }: { task: any, onToggle: () => voi
       task.status === 'completed' ? 'bg-white/5 border-transparent' : 
       isPast ? 'bg-red-500/5 border-red-500/20' : 'bg-white/5 border-white/10'
     }`}>
-      <button onClick={onToggle} className="mt-0.5 text-slate-400 hover:text-emerald-400 transition-colors shrink-0">
+      <button aria-label={task.status === 'completed' ? "Mark as pending" : "Mark as completed"} title={task.status === 'completed' ? "Mark as pending" : "Mark as completed"} onClick={onToggle} className="mt-0.5 text-slate-400 hover:text-emerald-400 transition-colors shrink-0">
         {task.status === 'completed' ? <CheckCircle2 className="w-5 h-5 text-emerald-500" /> : <Circle className="w-5 h-5" />}
       </button>
       <div className="flex-1 min-w-0">
@@ -132,7 +132,7 @@ function TaskCard({ task, onToggle, onDelete }: { task: any, onToggle: () => voi
           <p className="text-xs text-slate-500 mt-1 line-clamp-2">{task.notes}</p>
         )}
       </div>
-      <button onClick={onDelete} className="p-1.5 hover:bg-white/10 rounded text-slate-500 hover:text-red-400 transition-colors shrink-0 h-fit">
+      <button aria-label="Delete task" title="Delete task" onClick={onDelete} className="p-1.5 hover:bg-white/10 rounded text-slate-500 hover:text-red-400 transition-colors shrink-0 h-fit">
         <Trash2 className="w-4 h-4" />
       </button>
     </div>

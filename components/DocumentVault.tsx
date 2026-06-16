@@ -159,7 +159,7 @@ export default function DocumentVault() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] text-emerald-500 uppercase font-bold tracking-widest px-2 py-0.5 bg-emerald-500/10 rounded">Uploaded</span>
-                    <button onClick={() => handleDelete(doc)} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-white/5 rounded transition-colors opacity-0 group-hover:opacity-100">
+                    <button aria-label="Delete document" title="Delete document" onClick={() => handleDelete(doc)} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-white/5 rounded transition-colors opacity-0 group-hover:opacity-100">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>

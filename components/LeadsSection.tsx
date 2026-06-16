@@ -238,10 +238,10 @@ export default function LeadsSection() {
                   </span>
                 </div>
                 <div className="text-right flex justify-end gap-2">
-                  <button onClick={() => setSelectedLeadId(lead.id)} className="p-1 hover:bg-white/5 rounded text-emerald-500 transition-colors">
+                  <button aria-label="Edit lead" title="Edit lead" onClick={() => setSelectedLeadId(lead.id)} className="p-1 hover:bg-white/5 rounded text-emerald-500 transition-colors">
                     <Edit2 className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(lead.id)} className="p-1 hover:bg-white/5 rounded text-red-400 transition-colors">
+                  <button aria-label="Delete lead" title="Delete lead" onClick={() => handleDelete(lead.id)} className="p-1 hover:bg-white/5 rounded text-red-400 transition-colors">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
