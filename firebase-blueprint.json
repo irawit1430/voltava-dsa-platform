@@ -1,0 +1,125 @@
+{
+  "entities": {
+    "Lead": {
+      "title": "Lead",
+      "description": "DSA Lead for loan",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "dob": {
+          "type": "string"
+        },
+        "fatherName": {
+          "type": "string"
+        },
+        "motherName": {
+          "type": "string"
+        },
+        "mobile": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "currentAddress": {
+          "type": "string"
+        },
+        "pincode": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "officeAddress": {
+          "type": "string"
+        },
+        "officePincode": {
+          "type": "string"
+        },
+        "referenceName": {
+          "type": "string"
+        },
+        "referenceNumber": {
+          "type": "string"
+        },
+        "loanAmount": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "New",
+            "Follow-up",
+            "Documents Pending",
+            "Approved",
+            "Rejected"
+          ]
+        },
+        "createdAt": {
+          "type": "number",
+          "description": "Timestamp in milliseconds"
+        },
+        "updatedAt": {
+          "type": "number",
+          "description": "Timestamp in milliseconds"
+        }
+      },
+      "required": [
+        "userId",
+        "fullName",
+        "mobile",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Document": {
+      "title": "Document",
+      "description": "Uploaded document for a lead",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "leadId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "userId",
+        "leadId",
+        "name",
+        "url",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "leads": {
+      "schema": {
+        "$ref": "#/entities/Lead"
+      },
+      "description": "Collection of all leads"
+    },
+    "leads/{leadId}/documents": {
+      "schema": {
+        "$ref": "#/entities/Document"
+      },
+      "description": "Collection of documents per lead"
+    }
+  }
+}

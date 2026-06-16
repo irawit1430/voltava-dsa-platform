@@ -1,0 +1,6 @@
+{
+  "name": "Voltava DSA Platform",
+  "description": "Lead tracker, EMI calculator, Eligibility checking, Document Vault, and Follow-up scheduling for Loan DSA.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
