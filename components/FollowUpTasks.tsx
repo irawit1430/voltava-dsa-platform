@@ -66,9 +66,9 @@ export default function FollowUpTasks() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 overflow-hidden">
           {/* Pending Tasks */}
-          <div className="bg-[#121214] border border-white/5 rounded-xl flex flex-col overflow-hidden">
-            <div className="px-5 py-4 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
-              <h3 className="text-sm font-bold text-white uppercase tracking-widest flex items-center">
+          <div className="bg-[#121214] border border-white/5 rounded-2xl flex flex-col overflow-hidden shadow-xl">
+            <div className="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-[#121214]">
+              <h3 className="text-xs font-bold text-white uppercase tracking-widest font-grotesk flex items-center">
                 <Clock className="w-4 h-4 mr-2 text-amber-500" />
                 Pending
               </h3>
@@ -83,9 +83,9 @@ export default function FollowUpTasks() {
           </div>
 
           {/* Completed Tasks */}
-          <div className="bg-[#121214] border border-white/5 rounded-xl flex flex-col overflow-hidden">
-            <div className="px-5 py-4 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
-              <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center">
+          <div className="bg-[#121214] border border-white/5 rounded-2xl flex flex-col overflow-hidden shadow-xl">
+            <div className="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-[#121214]">
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-grotesk flex items-center">
                 <CheckCircle2 className="w-4 h-4 mr-2 text-emerald-500" />
                 Completed
               </h3>
@@ -110,9 +110,9 @@ function TaskCard({ task, onToggle, onDelete }: { task: any, onToggle: () => voi
   const isPast = dateObj.getTime() < now && task.status === 'pending';
   
   return (
-    <div className={`p-4 rounded-lg border transition-colors flex gap-4 \${
+    <div className={`p-5 rounded-xl border transition-colors flex gap-4 \${
       task.status === 'completed' ? 'bg-white/5 border-transparent' : 
-      isPast ? 'bg-red-500/5 border-red-500/20' : 'bg-white/5 border-white/10'
+      isPast ? 'bg-red-500/5 border-red-500/20' : 'bg-white/[0.02] border-white/5'
     }`}>
       <button aria-label={task.status === 'completed' ? "Mark as pending" : "Mark as completed"} title={task.status === 'completed' ? "Mark as pending" : "Mark as completed"} onClick={onToggle} className="mt-0.5 text-slate-400 hover:text-emerald-400 transition-colors shrink-0">
         {task.status === 'completed' ? <CheckCircle2 className="w-5 h-5 text-emerald-500" /> : <Circle className="w-5 h-5" />}

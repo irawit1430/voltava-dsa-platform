@@ -6,41 +6,45 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 
 export default function EMICalculator() {
-  const [principal, setPrincipal] = useState<number>(4500000);
-  const [rate, setRate] = useState<number>(8.4);
-  const [tenure, setTenure] = useState<number>(20);
+  const [principal, setPrincipal] = useState<number | string>(1000000);
+  const [rate, setRate] = useState<number | string>(8.5);
+  const [tenure, setTenure] = useState<number | string>(15);
   const [calcMethod, setCalcMethod] = useState<'reducing' | 'flat'>('reducing');
 
   const { emi, totalInterest, totalAmount, amortization } = useMemo(() => {
-    if (!principal || !tenure || principal <= 0 || tenure <= 0) {
+    const p = Number(principal) || 0;
+    const r = Number(rate) || 0;
+    const t = Number(tenure) || 0;
+
+    if (p <= 0 || t <= 0) {
       return { emi: 0, totalInterest: 0, totalAmount: 0, amortization: [] };
     }
 
     let calculatedEmi = 0;
     let totalInt = 0;
     let totalAmt = 0;
-    const months = tenure * 12;
+    const months = t * 12;
     const schedule = [];
 
     if (calcMethod === 'reducing') {
-      const r = rate / 12 / 100;
-      if (r === 0) {
-        calculatedEmi = principal / months;
+      const monthlyRate = r / 12 / 100;
+      if (monthlyRate === 0) {
+        calculatedEmi = p / months;
         totalInt = 0;
-        totalAmt = principal;
+        totalAmt = p;
       } else {
-        calculatedEmi = principal * r * (Math.pow(1 + r, months) / (Math.pow(1 + r, months) - 1));
+        calculatedEmi = p * monthlyRate * (Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1));
         totalAmt = calculatedEmi * months;
-        totalInt = totalAmt - principal;
+        totalInt = totalAmt - p;
       }
 
       // Generate Amortization Schedule (Yearly)
-      let balance = principal;
-      for (let year = 1; year <= tenure; year++) {
+      let balance = p;
+      for (let year = 1; year <= t; year++) {
         let yearlyInterest = 0;
         let yearlyPrincipal = 0;
         for (let m = 1; m <= 12; m++) {
-          const interestForMonth = balance * (rate / 12 / 100);
+          const interestForMonth = balance * monthlyRate;
           const principalForMonth = calculatedEmi - interestForMonth;
           yearlyInterest += interestForMonth;
           yearlyPrincipal += principalForMonth;
@@ -55,15 +59,15 @@ export default function EMICalculator() {
       }
     } else {
       // Flat Rate
-      totalInt = principal * (rate / 100) * tenure;
-      totalAmt = principal + totalInt;
+      totalInt = p * (r / 100) * t;
+      totalAmt = p + totalInt;
       calculatedEmi = totalAmt / months;
       
       // Simple linear amortization for Flat Rate
-      const yearlyPrincipal = principal / tenure;
-      const yearlyInterest = totalInt / tenure;
-      let balance = principal;
-      for (let year = 1; year <= tenure; year++) {
+      const yearlyPrincipal = p / t;
+      const yearlyInterest = totalInt / t;
+      let balance = p;
+      for (let year = 1; year <= t; year++) {
         balance -= yearlyPrincipal;
         schedule.push({
           year,
@@ -81,8 +85,8 @@ export default function EMICalculator() {
       amortization: schedule
     };
   }, [principal, rate, tenure, calcMethod]);
-
-  const principalPercentage = totalAmount > 0 ? (principal / totalAmount) * 100 : 0;
+  const p = Number(principal) || 0;
+  const principalPercentage = totalAmount > 0 ? (p / totalAmount) * 100 : 0;
   const interestPercentage = totalAmount > 0 ? (totalInterest / totalAmount) * 100 : 0;
 
   return (
@@ -93,16 +97,16 @@ export default function EMICalculator() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="space-y-6">
-          <section className="bg-[#121214] border border-white/5 rounded-xl p-5">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Loan Parameters</h3>
-            <div className="space-y-4">
+          <section className="bg-[#121214] border border-white/5 rounded-2xl p-6 shadow-xl">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-grotesk mb-5">Loan Parameters</h3>
+            <div className="space-y-5">
               <div>
-                <label className="text-[10px] text-slate-500 block mb-1 uppercase tracking-wider">Calculation Method</label>
+                <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Calculation Method</label>
                 <Select value={calcMethod} onValueChange={(val) => setCalcMethod(val as 'reducing' | 'flat')}>
-                  <SelectTrigger className="w-full bg-white/5 border-white/10 text-slate-200 focus:ring-emerald-500">
+                  <SelectTrigger className="w-full bg-black/20 border-white/10 text-slate-200 focus:ring-emerald-500/20 focus:border-emerald-500/50 transition-colors h-10">
                     <SelectValue placeholder="Select method" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a1a1c] border-white/10 text-slate-200">
+                  <SelectContent className="bg-[#121214] border-white/10 text-slate-200 rounded-lg">
                     <SelectItem value="reducing">Reducing Balance (Standard)</SelectItem>
                     <SelectItem value="flat">Flat Rate (Consumer Durable)</SelectItem>
                   </SelectContent>
@@ -110,33 +114,33 @@ export default function EMICalculator() {
               </div>
 
               <div>
-                <label className="text-[10px] text-slate-500 block mb-1 uppercase tracking-wider">Principal Amount (₹)</label>
+                <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Principal Amount (₹)</label>
                 <Input 
                   type="number" 
                   value={principal} 
-                  onChange={(e) => setPrincipal(Number(e.target.value))}
-                  className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm font-mono text-emerald-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  onChange={(e) => setPrincipal(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="w-full bg-black/20 border border-white/10 text-emerald-400 font-mono focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-colors h-10"
                 />
               </div>
               
               <div>
-                <label className="text-[10px] text-slate-500 block mb-1 uppercase tracking-wider">Interest Rate (% p.a.)</label>
+                <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Interest Rate (% p.a.)</label>
                 <Input 
                   type="number" 
                   step="0.1"
                   value={rate} 
-                  onChange={(e) => setRate(Number(e.target.value))}
-                  className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm font-mono text-slate-200"
+                  onChange={(e) => setRate(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="w-full bg-black/20 border border-white/10 text-slate-200 font-mono focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-colors h-10"
                 />
               </div>
 
               <div>
-                <label className="text-[10px] text-slate-500 block mb-1 uppercase tracking-wider">Tenure (Years)</label>
+                <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Tenure (Years)</label>
                 <Input 
                   type="number" 
                   value={tenure} 
-                  onChange={(e) => setTenure(Number(e.target.value))}
-                  className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm font-mono text-slate-200"
+                  onChange={(e) => setTenure(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="w-full bg-black/20 border border-white/10 text-slate-200 font-mono focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-colors h-10"
                 />
               </div>
             </div>
@@ -144,7 +148,7 @@ export default function EMICalculator() {
         </div>
 
         <div className="space-y-6">
-          <section className="bg-[#121214] border border-white/5 rounded-xl p-5 overflow-hidden relative h-full flex flex-col justify-center">
+          <section className="bg-[#121214] border border-white/5 rounded-2xl p-6 shadow-xl overflow-hidden relative h-full flex flex-col justify-center">
             <div className="absolute top-0 right-0 p-32 bg-emerald-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
             
             <div className="text-center py-4">
@@ -186,9 +190,9 @@ export default function EMICalculator() {
 
       {/* Amortization Schedule */}
       {amortization.length > 0 && (
-        <section className="bg-[#121214] border border-white/5 rounded-xl overflow-hidden">
-          <div className="p-5 border-b border-white/5">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Yearly Amortization Schedule</h3>
+        <section className="bg-[#121214] border border-white/5 rounded-2xl overflow-hidden shadow-xl mt-6">
+          <div className="p-6 border-b border-white/5">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-grotesk">Yearly Amortization Schedule</h3>
           </div>
           <div className="overflow-x-auto">
             <Table>

@@ -7,12 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 
 export default function EligibilityChecker() {
   const [loanType, setLoanType] = useState<'home' | 'personal' | 'car'>('home');
-  const [monthlyIncome, setMonthlyIncome] = useState<number>(124000);
-  const [currentEMIs, setCurrentEMIs] = useState<number>(15000);
+  const [monthlyIncome, setMonthlyIncome] = useState<number | string>(50000);
+  const [currentEMIs, setCurrentEMIs] = useState<number | string>(0);
   
   // Default values based on loan type will be managed by useEffect
-  const [tenure, setTenure] = useState<number>(20);
-  const [rate, setRate] = useState<number>(8.5);
+  const [tenure, setTenure] = useState<number | string>(20);
+  const [rate, setRate] = useState<number | string>(8.5);
 
   useEffect(() => {
     if (loanType === 'home') {
@@ -28,27 +28,27 @@ export default function EligibilityChecker() {
   }, [loanType]);
 
   const eligibility = useMemo(() => {
+    const income = Number(monthlyIncome) || 0;
+    const emis = Number(currentEMIs) || 0;
+    const t = Number(tenure) || 0;
+    const r = Number(rate) || 0;
+
     // Dynamic FOIR logic based on loan type and income
     let foirLimit = 0.5;
-    if (loanType === 'home') foirLimit = monthlyIncome > 100000 ? 0.65 : 0.6;
-    else if (loanType === 'personal') foirLimit = monthlyIncome > 100000 ? 0.6 : 0.5;
+    if (loanType === 'home') foirLimit = income > 100000 ? 0.65 : 0.6;
+    else if (loanType === 'personal') foirLimit = income > 100000 ? 0.6 : 0.5;
     else if (loanType === 'car') foirLimit = 0.55;
 
-    const maxEmiAllowed = (monthlyIncome * foirLimit) - currentEMIs;
+    const maxEmiAllowed = (income * foirLimit) - emis;
     
-    if (maxEmiAllowed <= 0) {
+    if (maxEmiAllowed <= 0 || t <= 0 || r <= 0) {
       return { eligibleLoan: 0, maxEmi: 0, foirUsed: 1, foirLimit, processingFee: 0, gst: 0, stampDuty: 0 };
     }
 
-    const r = rate / 12 / 100;
-    const n = tenure * 12; // tenure in years -> months
-    let maxLoan = 0;
-
-    if (r === 0) {
-      maxLoan = maxEmiAllowed * n;
-    } else {
-      maxLoan = maxEmiAllowed / (r * (Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1)));
-    }
+    const monthlyRate = (r / 12) / 100;
+    const months = t * 12;
+    
+    const maxLoan = maxEmiAllowed * ((Math.pow(1 + monthlyRate, months) - 1) / (monthlyRate * Math.pow(1 + monthlyRate, months)));
 
     // Statutory Charges (KFS Elements)
     const pfPercent = loanType === 'home' ? 1 : loanType === 'personal' ? 2 : 1.5;
@@ -59,7 +59,7 @@ export default function EligibilityChecker() {
     return {
       eligibleLoan: Math.max(0, maxLoan),
       maxEmi: maxEmiAllowed,
-      foirUsed: currentEMIs / (monthlyIncome * foirLimit),
+      foirUsed: emis / (income * foirLimit),
       foirLimit,
       processingFee,
       gst,
@@ -76,16 +76,16 @@ export default function EligibilityChecker() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <section className="bg-[#121214] border border-white/5 rounded-xl p-5 h-fit">
-          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Profile & Financial Details</h3>
-          <div className="space-y-4">
+        <section className="bg-[#121214] border border-white/5 rounded-2xl p-6 h-fit shadow-xl">
+          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-grotesk mb-5">Profile & Financial Details</h3>
+          <div className="space-y-5">
             <div>
-              <label className="text-[10px] text-slate-500 block mb-1 uppercase tracking-wider">Loan Type</label>
+              <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Loan Type</label>
               <Select value={loanType} onValueChange={(val) => setLoanType(val as 'home' | 'personal' | 'car')}>
-                <SelectTrigger className="w-full bg-white/5 border-white/10 text-slate-200 focus:ring-emerald-500">
+                <SelectTrigger className="w-full bg-black/20 border-white/10 text-slate-200 focus:ring-emerald-500/20 focus:border-emerald-500/50 transition-colors h-10">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1a1c] border-white/10 text-slate-200">
+                <SelectContent className="bg-[#121214] border-white/10 text-slate-200 rounded-lg">
                   <SelectItem value="home">Home Loan</SelectItem>
                   <SelectItem value="personal">Personal Loan</SelectItem>
                   <SelectItem value="car">Car Loan</SelectItem>
@@ -94,43 +94,43 @@ export default function EligibilityChecker() {
             </div>
 
             <div>
-              <label className="text-[10px] text-slate-500 block mb-1 uppercase tracking-wider">Net Monthly Income (₹)</label>
+              <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Net Monthly Income (₹)</label>
               <Input 
                 type="number" 
                 value={monthlyIncome} 
-                onChange={(e) => setMonthlyIncome(Number(e.target.value))}
-                className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm font-mono text-emerald-400 focus:border-emerald-500"
+                onChange={(e) => setMonthlyIncome(e.target.value === '' ? '' : Number(e.target.value))}
+                className="w-full bg-black/20 border border-white/10 text-emerald-400 font-mono focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-colors h-10"
               />
             </div>
             
             <div>
-              <label className="text-[10px] text-slate-500 block mb-1 uppercase tracking-wider">Existing EMIs (₹/month)</label>
+              <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Existing EMIs (₹/month)</label>
               <Input 
                 type="number" 
                 value={currentEMIs} 
-                onChange={(e) => setCurrentEMIs(Number(e.target.value))}
-                className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm font-mono text-amber-400 focus:border-emerald-500"
+                onChange={(e) => setCurrentEMIs(e.target.value === '' ? '' : Number(e.target.value))}
+                className="w-full bg-black/20 border border-white/10 text-amber-400 font-mono focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-colors h-10"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-6">
                <div>
-                 <label className="text-[10px] text-slate-500 block mb-1 uppercase tracking-wider">Tenure (Yrs)</label>
+                 <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Tenure (Yrs)</label>
                  <Input 
                    type="number" 
                    value={tenure} 
-                   onChange={(e) => setTenure(Number(e.target.value))}
-                   className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm font-mono text-slate-200 focus:border-emerald-500"
+                   onChange={(e) => setTenure(e.target.value === '' ? '' : Number(e.target.value))}
+                   className="w-full bg-black/20 border border-white/10 text-slate-200 font-mono focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-colors h-10"
                  />
                </div>
                <div>
-                 <label className="text-[10px] text-slate-500 block mb-1 uppercase tracking-wider">Rate (%)</label>
+                 <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Rate (%)</label>
                  <Input 
                    type="number" 
                    step="0.1"
                    value={rate} 
-                   onChange={(e) => setRate(Number(e.target.value))}
-                   className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm font-mono text-slate-200 focus:border-emerald-500"
+                   onChange={(e) => setRate(e.target.value === '' ? '' : Number(e.target.value))}
+                   className="w-full bg-black/20 border border-white/10 text-slate-200 font-mono focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-colors h-10"
                  />
                </div>
             </div>
@@ -138,10 +138,10 @@ export default function EligibilityChecker() {
         </section>
 
         <div className="space-y-6">
-          <section className="bg-[#121214] border border-white/5 rounded-xl p-5 flex flex-col items-center justify-center relative overflow-hidden">
+          <section className="bg-[#121214] border border-white/5 rounded-2xl p-6 shadow-xl flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute top-0 right-0 p-32 bg-emerald-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
-            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-6">Estimated Max Loan</h3>
+            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-grotesk mb-6">Estimated Max Loan</h3>
             
             <div className="w-32 h-32 rounded-full border-4 border-white/5 border-t-emerald-500 flex items-center justify-center mb-6">
               <div className="text-center">
@@ -176,8 +176,8 @@ export default function EligibilityChecker() {
 
           {/* Key Fact Statement (KFS) Estimations */}
           {eligibleLoan > 0 && (
-            <section className="bg-[#121214] border border-white/5 rounded-xl p-5 relative overflow-hidden">
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Statutory Charges (KFS Estimates)</h3>
+            <section className="bg-[#121214] border border-white/5 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-grotesk mb-5">Statutory Charges (KFS Estimates)</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between items-center pb-2 border-b border-white/5">
                   <span className="text-slate-400">Est. Processing Fee</span>

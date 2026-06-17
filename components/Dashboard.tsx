@@ -5,7 +5,7 @@ import { User } from 'firebase/auth';
 import { 
   Users, Calculator, FileCheck, 
   FilesIcon, Bot, LogOut, Loader2, Calendar,
-  User as UserIcon
+  User as UserIcon, ShieldAlert
 } from 'lucide-react';
 
 import LeadsSection from './LeadsSection';
@@ -14,9 +14,10 @@ import EligibilityChecker from './EligibilityChecker';
 import DocumentVault from './DocumentVault';
 import AIScriptWriter from './AIScriptWriter';
 import FollowUpTasks from './FollowUpTasks';
+import ObjectionHandling from './ObjectionHandling';
 
 export default function Dashboard({ user, onLogout }: { user: User | null, onLogout: () => void }) {
-  const [activeTab, setActiveTab] = useState<'leads' | 'tasks' | 'emi' | 'eligibility' | 'docs' | 'ai'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'tasks' | 'emi' | 'eligibility' | 'docs' | 'ai' | 'objections'>('leads');
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
@@ -31,6 +32,7 @@ export default function Dashboard({ user, onLogout }: { user: User | null, onLog
     { id: 'eligibility', label: 'Eligibility Check', icon: FileCheck },
     { id: 'docs', label: 'Document Vault', icon: FilesIcon },
     { id: 'ai', label: 'AI Script (Gemini)', icon: Bot },
+    { id: 'objections', label: 'Hindi Objections', icon: ShieldAlert },
   ] as const;
 
   return (
@@ -92,9 +94,10 @@ export default function Dashboard({ user, onLogout }: { user: User | null, onLog
         {activeTab === 'leads' && <LeadsSection />}
         {activeTab === 'tasks' && <FollowUpTasks />}
         {activeTab === 'emi' && <EMICalculator />}
-        {activeTab === 'eligibility' && <EligibilityChecker />}
-        {activeTab === 'docs' && <DocumentVault />}
-        {activeTab === 'ai' && <AIScriptWriter />}
+        { activeTab === 'eligibility' && <EligibilityChecker /> }
+        { activeTab === 'docs' && <DocumentVault /> }
+        { activeTab === 'ai' && <AIScriptWriter /> }
+        { activeTab === 'objections' && <ObjectionHandling /> }
       </div>
     </div>
   );
