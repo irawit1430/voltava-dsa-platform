@@ -49,7 +49,12 @@ export default function AIScriptWriter() {
       const res = await fetch('/api/gemini/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ leadDetails: lead, language, generateType: type })
+        body: JSON.stringify({ 
+          leadDetails: lead, 
+          language, 
+          generateType: type,
+          agentName: auth.currentUser?.displayName || 'Agent'
+        })
       });
       
       const data = await res.json();
