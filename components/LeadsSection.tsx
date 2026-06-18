@@ -22,7 +22,7 @@ export default function LeadsSection() {
   const [formData, setFormData] = useState({
     fullName: '', dob: '', fatherName: '', motherName: '', mobile: '', email: '',
     currentAddress: '', pincode: '', company: '', officeAddress: '', officePincode: '',
-    referenceName: '', referenceNumber: '', loanAmount: '' as number | string, status: 'New'
+    referenceName: '', referenceNumber: '', loanAmount: '' as number | string, salary: '' as number | string, status: 'New'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -49,6 +49,7 @@ export default function LeadsSection() {
         userId: auth.currentUser.uid,
         ...formData,
         loanAmount: Number(formData.loanAmount) || 0,
+        salary: Number(formData.salary) || 0,
         createdAt: Date.now(),
         updatedAt: Date.now(),
       };
@@ -57,7 +58,7 @@ export default function LeadsSection() {
       setFormData({
         fullName: '', dob: '', fatherName: '', motherName: '', mobile: '', email: '',
         currentAddress: '', pincode: '', company: '', officeAddress: '', officePincode: '',
-        referenceName: '', referenceNumber: '', loanAmount: '', status: 'New'
+        referenceName: '', referenceNumber: '', loanAmount: '', salary: '', status: 'New'
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'leads');
@@ -176,16 +177,23 @@ export default function LeadsSection() {
                         <Input value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} className="bg-black/20 border-white/10 text-slate-200 focus:border-emerald-500/50 focus:ring-emerald-500/20 h-11 pl-10 transition-colors placeholder:text-slate-600 text-sm" placeholder="TCS / InfoSys" />
                       </div>
                     </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-grotesk">Monthly Salary</Label>
+                      <div className="relative">
+                        <IndianRupee className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                        <Input type="number" value={formData.salary} onChange={e => setFormData({...formData, salary: e.target.value === '' ? '' : Number(e.target.value)})} className="bg-black/20 border-white/10 text-slate-200 focus:border-emerald-500/50 focus:ring-emerald-500/20 h-11 pl-10 transition-colors font-mono placeholder:text-slate-600 text-sm" placeholder="50000" />
+                      </div>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-grotesk">Father's Name</Label>
-                      <Input value={formData.fatherName} onChange={e => setFormData({...formData, fatherName: e.target.value})} className="bg-black/20 border-white/10 text-slate-200 focus:border-emerald-500/50 focus:ring-emerald-500/20 h-11 px-3 transition-colors placeholder:text-slate-600 text-sm" placeholder="Father's Name" />
+                      <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-grotesk">Father&apos;s Name</Label>
+                      <Input value={formData.fatherName} onChange={e => setFormData({...formData, fatherName: e.target.value})} className="bg-black/20 border-white/10 text-slate-200 focus:border-emerald-500/50 focus:ring-emerald-500/20 h-11 px-3 transition-colors placeholder:text-slate-600 text-sm" placeholder="Father&apos;s Name" />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-grotesk">Mother's Name</Label>
-                      <Input value={formData.motherName} onChange={e => setFormData({...formData, motherName: e.target.value})} className="bg-black/20 border-white/10 text-slate-200 focus:border-emerald-500/50 focus:ring-emerald-500/20 h-11 px-3 transition-colors placeholder:text-slate-600 text-sm" placeholder="Mother's Name" />
+                      <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-grotesk">Mother&apos;s Name</Label>
+                      <Input value={formData.motherName} onChange={e => setFormData({...formData, motherName: e.target.value})} className="bg-black/20 border-white/10 text-slate-200 focus:border-emerald-500/50 focus:ring-emerald-500/20 h-11 px-3 transition-colors placeholder:text-slate-600 text-sm" placeholder="Mother&apos;s Name" />
                     </div>
                   </div>
 
@@ -328,6 +336,7 @@ function LeadDetails({ lead, onBack }: { lead: any, onBack: () => void }) {
     officeAddress: lead.officeAddress || '',
     officePincode: lead.officePincode || '',
     loanAmount: lead.loanAmount || '',
+    salary: lead.salary || '',
   });
 
   // Keep editForm synced with the parent live subscription changes
@@ -354,6 +363,7 @@ function LeadDetails({ lead, onBack }: { lead: any, onBack: () => void }) {
       await updateDoc(doc(db, 'leads', lead.id), {
         ...editForm,
         loanAmount: Number(editForm.loanAmount) || 0,
+        salary: Number(editForm.salary) || 0,
         updatedAt: Date.now()
       });
       setIsEditing(false);
@@ -557,13 +567,23 @@ function LeadDetails({ lead, onBack }: { lead: any, onBack: () => void }) {
         <section className="bg-[#121214] border border-white/5 rounded-2xl p-6 shadow-xl">
           <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-grotesk mb-5">Employment & Loan Info</h3>
           <div className="grid grid-cols-1 gap-y-5">
-            <div>
-              <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Company Name</label>
-              {isEditing ? (
-                <Input value={editForm.company} onChange={e => setEditForm({...editForm, company: e.target.value})} className="bg-black/20 border-white/10 text-slate-200 text-sm h-9 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-colors" />
-              ) : (
-                <p className="text-sm text-slate-300 font-medium">{lead.company || '-'}</p>
-              )}
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Company Name</label>
+                {isEditing ? (
+                  <Input value={editForm.company} onChange={e => setEditForm({...editForm, company: e.target.value})} className="bg-black/20 border-white/10 text-slate-200 text-sm h-9 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-colors" />
+                ) : (
+                  <p className="text-sm text-slate-300 font-medium">{lead.company || '-'}</p>
+                )}
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Monthly Salary</label>
+                {isEditing ? (
+                  <Input type="number" value={editForm.salary} onChange={e => setEditForm({...editForm, salary: e.target.value === '' ? '' : Number(e.target.value)})} className="bg-black/20 border-white/10 text-slate-200 font-mono text-sm h-9 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-colors" />
+                ) : (
+                  <p className="text-sm text-slate-300 font-mono font-medium">{lead.salary ? `₹${lead.salary.toLocaleString()}` : '-'}</p>
+                )}
+              </div>
             </div>
             <div>
               <label className="text-[10px] font-bold text-slate-500 block mb-1.5 uppercase tracking-widest font-grotesk">Office Address</label>
@@ -650,7 +670,7 @@ function LeadDetails({ lead, onBack }: { lead: any, onBack: () => void }) {
                   <SelectItem value="Interested">Interested</SelectItem>
                   <SelectItem value="Call Back Later">Call Back Later</SelectItem>
                   <SelectItem value="Not Interested">Not Interested</SelectItem>
-                  <SelectItem value="Didn't Pick Up">Didn't Pick Up</SelectItem>
+                  <SelectItem value="Didn&apos;t Pick Up">Didn&apos;t Pick Up</SelectItem>
                   <SelectItem value="Number Invalid">Number Invalid</SelectItem>
                 </SelectContent>
               </Select>
