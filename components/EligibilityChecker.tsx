@@ -48,7 +48,8 @@ export default function EligibilityChecker() {
     const monthlyRate = (r / 12) / 100;
     const months = t * 12;
     
-    const maxLoan = maxEmiAllowed * ((Math.pow(1 + monthlyRate, months) - 1) / (monthlyRate * Math.pow(1 + monthlyRate, months)));
+    const compoundFactor = Math.pow(1 + monthlyRate, months);
+    const maxLoan = maxEmiAllowed * ((compoundFactor - 1) / (monthlyRate * compoundFactor));
 
     // Statutory Charges (KFS Elements)
     const pfPercent = loanType === 'home' ? 1 : loanType === 'personal' ? 2 : 1.5;
