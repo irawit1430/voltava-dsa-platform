@@ -43,8 +43,13 @@ export default function FollowUpTasks() {
     }
   };
 
-  const pendingTasks = tasks.filter(t => t.status === 'pending');
-  const completedTasks = tasks.filter(t => t.status === 'completed');
+  const pendingTasks: any[] = [];
+  const completedTasks: any[] = [];
+
+  for (const t of tasks) {
+    if (t.status === 'pending') pendingTasks.push(t);
+    else if (t.status === 'completed') completedTasks.push(t);
+  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto flex flex-col h-full overflow-hidden">
