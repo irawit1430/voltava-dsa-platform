@@ -20,6 +20,8 @@ export default function AIScriptWriter() {
   const [isGeneratingWa, setIsGeneratingWa] = useState(false);
   const [whatsappMessage, setWhatsappMessage] = useState<string>('');
 
+  const selectedLead = leads.find(l => l.id === selectedLeadId);
+
   useEffect(() => {
     if (!auth.currentUser) return;
     const unsubLeads = onSnapshot(query(collection(db, 'leads'), where('userId', '==', auth.currentUser.uid)), (snapshot) => {
@@ -34,7 +36,7 @@ export default function AIScriptWriter() {
   const generateContent = async (type: 'script' | 'whatsapp') => {
     if (!selectedLeadId) return;
     
-    const lead = leads.find(l => l.id === selectedLeadId);
+    const lead = selectedLead;
     if (!lead) return;
 
     if (type === 'script') {
@@ -78,7 +80,7 @@ export default function AIScriptWriter() {
   };
 
   const openWhatsApp = () => {
-    const lead = leads.find(l => l.id === selectedLeadId);
+    const lead = selectedLead;
     if (!lead || !lead.mobile) {
       alert("No mobile number available for this lead.");
       return;
@@ -128,24 +130,19 @@ export default function AIScriptWriter() {
             </div>
           </section>
 
-          {selectedLeadId && leads.find(l => l.id === selectedLeadId) && (
+          {selectedLeadId && selectedLead && (
             <section className="bg-[#121214] border border-white/5 rounded-2xl p-6 shadow-xl">
               <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-grotesk mb-5 flex items-center">
                  Context Variables
               </h3>
               <div className="text-xs text-slate-300 space-y-4">
-                {(() => {
-                  const l = leads.find(l => l.id === selectedLeadId);
-                  return (
-                    <>
-                      <div><strong className="text-slate-500 block mb-1 uppercase text-[10px] tracking-widest font-grotesk">Prospect Name</strong> {l.fullName}</div>
-                      <div><strong className="text-slate-500 block mb-1 uppercase text-[10px] tracking-widest font-grotesk">Mobile</strong> {l.mobile}</div>
-                      <div><strong className="text-slate-500 block mb-1 uppercase text-[10px] tracking-widest font-grotesk">Loan Value</strong> <span className="font-mono text-emerald-400">₹{l.loanAmount?.toLocaleString()}</span></div>
-                      <div><strong className="text-slate-500 block mb-1 uppercase text-[10px] tracking-widest font-grotesk">Employment Target</strong> {l.company || 'N/A'}</div>
-                      <div><strong className="text-slate-500 block mb-1 uppercase text-[10px] tracking-widest font-grotesk">Pipeline Stage</strong> <span className="uppercase text-[10px] tracking-widest font-grotesk text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded">{l.status}</span></div>
-                    </>
-                  )
-                })()}
+                <>
+                  <div><strong className="text-slate-500 block mb-1 uppercase text-[10px] tracking-widest font-grotesk">Prospect Name</strong> {selectedLead.fullName}</div>
+                  <div><strong className="text-slate-500 block mb-1 uppercase text-[10px] tracking-widest font-grotesk">Mobile</strong> {selectedLead.mobile}</div>
+                  <div><strong className="text-slate-500 block mb-1 uppercase text-[10px] tracking-widest font-grotesk">Loan Value</strong> <span className="font-mono text-emerald-400">₹{selectedLead.loanAmount?.toLocaleString()}</span></div>
+                  <div><strong className="text-slate-500 block mb-1 uppercase text-[10px] tracking-widest font-grotesk">Employment Target</strong> {selectedLead.company || 'N/A'}</div>
+                  <div><strong className="text-slate-500 block mb-1 uppercase text-[10px] tracking-widest font-grotesk">Pipeline Stage</strong> <span className="uppercase text-[10px] tracking-widest font-grotesk text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded">{selectedLead.status}</span></div>
+                </>
               </div>
             </section>
           )}
