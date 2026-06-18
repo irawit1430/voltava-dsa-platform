@@ -180,11 +180,11 @@ export default function LeadsSection() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-grotesk">Father's Name</Label>
+                      <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-grotesk">Father&apos;s Name</Label>
                       <Input value={formData.fatherName} onChange={e => setFormData({...formData, fatherName: e.target.value})} className="bg-black/20 border-white/10 text-slate-200 focus:border-emerald-500/50 focus:ring-emerald-500/20 h-11 px-3 transition-colors placeholder:text-slate-600 text-sm" placeholder="Father's Name" />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-grotesk">Mother's Name</Label>
+                      <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-grotesk">Mother&apos;s Name</Label>
                       <Input value={formData.motherName} onChange={e => setFormData({...formData, motherName: e.target.value})} className="bg-black/20 border-white/10 text-slate-200 focus:border-emerald-500/50 focus:ring-emerald-500/20 h-11 px-3 transition-colors placeholder:text-slate-600 text-sm" placeholder="Mother's Name" />
                     </div>
                   </div>
@@ -650,7 +650,7 @@ function LeadDetails({ lead, onBack }: { lead: any, onBack: () => void }) {
                   <SelectItem value="Interested">Interested</SelectItem>
                   <SelectItem value="Call Back Later">Call Back Later</SelectItem>
                   <SelectItem value="Not Interested">Not Interested</SelectItem>
-                  <SelectItem value="Didn't Pick Up">Didn't Pick Up</SelectItem>
+                  <SelectItem value="Didn't Pick Up">Didn&apos;t Pick Up</SelectItem>
                   <SelectItem value="Number Invalid">Number Invalid</SelectItem>
                 </SelectContent>
               </Select>

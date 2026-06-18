@@ -62,7 +62,7 @@ export default function ObjectionHandling() {
             </div>
             <h3 className="text-lg font-medium text-white mb-2">Ready Answers</h3>
             <p className="text-sm text-slate-400 mb-6 leading-relaxed">
-              Quickly handle common customer objections during cold calls. Search for keywords like "interest", "fee", or "fraud" to find the right response instantly.
+              Quickly handle common customer objections during cold calls. Search for keywords like &quot;interest&quot;, &quot;fee&quot;, or &quot;fraud&quot; to find the right response instantly.
             </p>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
