@@ -45,7 +45,8 @@ export default function EMICalculator() {
         totalInt = 0;
         totalAmt = p;
       } else {
-        calculatedEmi = p * monthlyRate * (Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1));
+        const mathPow = Math.pow(1 + monthlyRate, months);
+        calculatedEmi = p * monthlyRate * (mathPow / (mathPow - 1));
         totalAmt = calculatedEmi * months;
         totalInt = totalAmt - p;
       }
