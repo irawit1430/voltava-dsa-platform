@@ -37,6 +37,6 @@ ${JSON.stringify(leadDetails, null, 2)}`;
     return NextResponse.json({ text: response.text });
   } catch (error: any) {
     console.error("Gemini Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to generate script. Please try again later." }, { status: 500 });
   }
 }
