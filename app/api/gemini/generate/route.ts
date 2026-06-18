@@ -1,8 +1,22 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
+import { admin } from "../../../../lib/firebase-admin";
 
 export async function POST(req: NextRequest) {
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const token = authHeader.split("Bearer ")[1];
+
+    try {
+      await admin.auth().verifyIdToken(token);
+    } catch (error) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { leadDetails, language = 'English', generateType = 'script', agentName = 'Agent' } = await req.json();
     
     if (!process.env.GEMINI_API_KEY) {
