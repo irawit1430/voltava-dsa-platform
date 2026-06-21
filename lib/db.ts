@@ -27,8 +27,10 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
     operationType,
     path
   };
+  // Log detailed error internally
   console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
+  // Throw a sanitized generic error to prevent leaking sensitive data to the UI
+  throw new Error('An error occurred while communicating with the database.');
 }
 
 export const makeId = () => Math.random().toString(36).substring(2, 15);
