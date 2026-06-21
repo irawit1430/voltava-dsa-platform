@@ -6,7 +6,8 @@ export async function POST(req: NextRequest) {
     const { leadDetails, language = 'English', generateType = 'script', agentName = 'Agent' } = await req.json();
     
     if (!process.env.GEMINI_API_KEY) {
-      return NextResponse.json({ error: "Missing GEMINI_API_KEY" }, { status: 500 });
+      console.error("Missing GEMINI_API_KEY environment variable");
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
