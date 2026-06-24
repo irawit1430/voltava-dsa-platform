@@ -1,3 +1,8 @@
+## 2024-06-18 - Hardcoded Firebase API Key
+**Vulnerability:** The Firebase API key was hardcoded in `firebase-applet-config.json`, which was committed to source control.
+**Learning:** Hardcoding API keys in configuration files exposes them to anyone with read access to the repository, leading to potential unauthorized access or quota abuse.
+**Prevention:** Always use environment variables (e.g., `process.env.NEXT_PUBLIC_FIREBASE_API_KEY`) to inject secrets into the application at runtime or build time, and ensure `.env` files are not committed to source control.
+
 ## 2024-06-17 - Error Information Leakage via API Response
 **Vulnerability:** The `/api/gemini/generate/route.ts` endpoint leaks detailed internal error messages to the client when a failure occurs. This can expose stack traces, internal paths, or API configuration details.
 **Learning:** Sending `error: error.message` in the catch block of API routes leaks internal error details to the frontend.
