@@ -68,7 +68,8 @@ export default function AIScriptWriter() {
         setWhatsappMessage(data.text);
       }
     } catch (e: any) {
-      alert(`Error: ${e.message}`);
+      console.error('Error generating script:', e);
+      alert('An error occurred while generating. Please try again.');
     } finally {
       if (type === 'script') setIsGenerating(false);
       else setIsGeneratingWa(false);

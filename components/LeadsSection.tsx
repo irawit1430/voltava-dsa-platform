@@ -398,7 +398,8 @@ function LeadDetails({ lead, onBack }: { lead: any, onBack: () => void }) {
       setFollowUpDate('');
       setFollowUpNotes('');
     } catch (error: any) {
-      alert(`Scheduling failed: ${error.message}`);
+      console.error('Scheduling failed:', error);
+      alert('Scheduling failed. Please try again.');
     } finally {
       setIsScheduling(false);
     }
@@ -428,7 +429,8 @@ function LeadDetails({ lead, onBack }: { lead: any, onBack: () => void }) {
       setCallObjection('');
       alert('Call logged successfully!');
     } catch (error: any) {
-      alert(`Call logging failed: ${error.message}`);
+      console.error('Call logging failed:', error);
+      alert('Call logging failed. Please try again.');
     } finally {
       setIsLoggingCall(false);
     }
