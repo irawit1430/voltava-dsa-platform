@@ -51,10 +51,26 @@ export default function DocumentVault() {
       return;
     }
     const file = e.target.files[0];
+
+    // Security: Validate file type and size
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Security Error: Invalid file type. Only PDF and images are allowed.');
+      e.target.value = '';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      alert('Security Error: File exceeds 5MB size limit.');
+      e.target.value = '';
+      return;
+    }
+
     setIsUploading(true);
     
     try {
-      const storagePath = `leads/${selectedLeadId}/documents/${Date.now()}_${file.name}`;
+      // Security: Sanitize filename to prevent path traversal issues
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+      const storagePath = `leads/${selectedLeadId}/documents/${Date.now()}_${sanitizedName}`;
       const fileRef = ref(storage, storagePath);
       const snapshot = await uploadBytes(fileRef, file);
       const downloadUrl = await getDownloadURL(snapshot.ref);
@@ -124,7 +140,7 @@ export default function DocumentVault() {
                   <p className="mb-1 text-xs text-slate-300 font-medium tracking-wide">Click to browse</p>
                   <p className="text-[10px] text-slate-500 uppercase tracking-wider">PDF, JPG, PNG</p>
                 </div>
-                <input type="file" className="hidden" onChange={handleUpload} disabled={isUploading} />
+                <input type="file" className="hidden" onChange={handleUpload} disabled={isUploading} accept=".pdf,.jpg,.jpeg,.png,.webp" />
                 </label>
             </div>
           )}
