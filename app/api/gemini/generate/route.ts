@@ -3,8 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { leadDetails, language = 'English', generateType = 'script', agentName = 'Agent' } = await req.json();
+    const body = await req.json();
+    const { leadDetails, language = 'English', generateType = 'script', agentName = 'Agent' } = body;
     
+    if (!leadDetails || typeof leadDetails !== 'object' ||
+        typeof language !== 'string' || language.length > 50 ||
+        typeof generateType !== 'string' || (generateType !== 'script' && generateType !== 'whatsapp') ||
+        typeof agentName !== 'string' || agentName.length > 100) {
+      return NextResponse.json({ error: "Invalid request payload" }, { status: 400 });
+    }
+
     if (!process.env.GEMINI_API_KEY) {
       console.error("Missing GEMINI_API_KEY environment variable");
       return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
