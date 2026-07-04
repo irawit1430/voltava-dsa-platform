@@ -8,7 +8,10 @@ import { getStorage } from 'firebase/storage';
 import firebaseConfig from '../firebase-applet-config.json';
 
 const ObjectConfig = firebaseConfig as any;
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+if (!ObjectConfig.apiKey && typeof process !== 'undefined' && process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+  ObjectConfig.apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+}
+const app = !getApps().length ? initializeApp(ObjectConfig) : getApp();
 export const db = getFirestore(app, ObjectConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
