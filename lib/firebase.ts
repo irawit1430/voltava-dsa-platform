@@ -5,7 +5,12 @@ import {
 } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import firebaseConfig from '../firebase-applet-config.json';
+import baseFirebaseConfig from '../firebase-applet-config.json';
+
+const firebaseConfig = {
+  ...baseFirebaseConfig,
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY
+};
 
 const ObjectConfig = firebaseConfig as any;
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
