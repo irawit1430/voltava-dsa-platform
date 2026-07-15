@@ -10,3 +10,8 @@
 **Vulnerability:** The Document Vault file upload functionality in `components/DocumentVault.tsx` lacked file type and size restrictions. Users could upload any file format (including potentially malicious scripts, executables, or excessively large files) which could lead to Stored XSS, malware hosting, or Denial of Service via storage exhaustion.
 **Learning:** React `<input type="file">`, without strict programmatic server/client validation, acts as a vector for multiple critical security risks. The `accept` HTML attribute alone does not provide adequate security as it can be bypassed.
 **Prevention:** Always implement programmatic checks on both file type (`file.type`) and file size (`file.size`) inside upload handlers. Furthermore, sanitize filenames to avoid path traversal and use restricted upload policies in cloud storage/firewall rules where possible.
+
+## 2024-07-15 - Hardcoded API Key in Firebase Config
+**Vulnerability:** Found a hardcoded Firebase API key in `firebase-applet-config.json` which is included directly in the source repository.
+**Learning:** Hardcoded credentials in source control or static configuration files can easily lead to credential leaks.
+**Prevention:** Avoid hardcoding secrets. Instead, inject sensitive configurations via environment variables (`NEXT_PUBLIC_FIREBASE_API_KEY`) at runtime or build time, and leave configuration files with empty values for secrets.
