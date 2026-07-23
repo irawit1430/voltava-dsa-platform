@@ -3,6 +3,28 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const token = authHeader.split("Bearer ")[1];
+
+    // Verify token with Firebase REST API since firebase-admin is not used
+    const verifyRes = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken: token }),
+      }
+    );
+
+    if (!verifyRes.ok) {
+      const errorData = await verifyRes.json();
+      console.error("Firebase Token Verification Error:", errorData);
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { leadDetails, language = 'English', generateType = 'script', agentName = 'Agent' } = await req.json();
     
     if (!process.env.GEMINI_API_KEY) {
