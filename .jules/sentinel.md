@@ -14,3 +14,7 @@
 **Vulnerability:** A highly critical Firebase API key was hardcoded directly in `firebase-applet-config.json`.
 **Learning:** Hardcoding API keys directly into configuration files that are checked into version control makes them easily accessible to unauthorized individuals.
 **Prevention:** Always use environment variables to supply API keys or other sensitive credentials during initialization. Use `NEXT_PUBLIC_FIREBASE_API_KEY` to provide the key to the frontend client securely.
+## 2024-07-24 - Missing Authentication on API Endpoints without firebase-admin
+**Vulnerability:** The `/api/gemini/generate/route.ts` endpoint was missing authentication, allowing unauthorized users to make requests and potentially exhaust the API quota.
+**Learning:** The lack of `firebase-admin` in this repository led to a skipped backend authentication check. Without it, custom JWT verification logic is required.
+**Prevention:** Always ensure sensitive backend endpoints are authenticated. If `firebase-admin` is unavailable, use the Google Identity Toolkit REST API (`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=...`) to verify Firebase ID tokens.
