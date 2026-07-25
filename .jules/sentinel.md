@@ -14,3 +14,7 @@
 **Vulnerability:** A highly critical Firebase API key was hardcoded directly in `firebase-applet-config.json`.
 **Learning:** Hardcoding API keys directly into configuration files that are checked into version control makes them easily accessible to unauthorized individuals.
 **Prevention:** Always use environment variables to supply API keys or other sensitive credentials during initialization. Use `NEXT_PUBLIC_FIREBASE_API_KEY` to provide the key to the frontend client securely.
+## 2025-02-18 - Unauthenticated Next.js API Routes using Firebase
+**Vulnerability:** The `/api/gemini/generate` endpoint was completely unauthenticated. Anyone could call it to generate text via the Gemini API, potentially leading to quota exhaustion and financial impact.
+**Learning:** In Next.js architectures where `firebase-admin` is intentionally excluded, verifying Firebase ID tokens manually via the Google Identity Toolkit REST API (`accounts:lookup`) is necessary to protect API routes.
+**Prevention:** Always verify `Authorization: Bearer <token>` in backend Next.js API routes when using Firebase. When `firebase-admin` is unavailable, use the Identity Toolkit REST API with the `NEXT_PUBLIC_FIREBASE_API_KEY` for verification.
