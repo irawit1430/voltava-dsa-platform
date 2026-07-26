@@ -1,3 +1,8 @@
+## 2026-07-26 - Missing API Route Authentication
+**Vulnerability:** The `/api/gemini/generate/route.ts` endpoint was unauthenticated, allowing any user to generate scripts and potentially exhaust API quotas or abuse the service.
+**Learning:** Next.js API routes do not automatically inherit Firebase client-side authentication. Because `firebase-admin` is not used, tokens must be passed manually from the client and verified against the Google Identity Toolkit REST API on the server.
+**Prevention:** Always verify authentication for sensitive or resource-intensive API routes. Extract the `Authorization` header and validate the ID token using the Identity Toolkit API before processing requests.
+
 ## 2024-06-17 - Error Information Leakage via API Response
 **Vulnerability:** The `/api/gemini/generate/route.ts` endpoint leaks detailed internal error messages to the client when a failure occurs. This can expose stack traces, internal paths, or API configuration details.
 **Learning:** Sending `error: error.message` in the catch block of API routes leaks internal error details to the frontend.
