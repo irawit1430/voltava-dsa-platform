@@ -48,9 +48,13 @@ export default function AIScriptWriter() {
     }
     
     try {
+      const idToken = auth.currentUser ? await auth.currentUser.getIdToken() : '';
       const res = await fetch('/api/gemini/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
         body: JSON.stringify({ 
           leadDetails: lead, 
           language, 
