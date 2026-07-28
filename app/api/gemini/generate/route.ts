@@ -3,6 +3,22 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const token = authHeader.split('Bearer ')[1];
+    const fbApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    const verifyRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${fbApiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken: token })
+    });
+    const verifyData = await verifyRes.json();
+    if (!verifyRes.ok || !verifyData.users || verifyData.users.length === 0) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { leadDetails, language = 'English', generateType = 'script', agentName = 'Agent' } = await req.json();
     
     if (!process.env.GEMINI_API_KEY) {
