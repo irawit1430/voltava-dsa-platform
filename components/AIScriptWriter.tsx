@@ -48,9 +48,16 @@ export default function AIScriptWriter() {
     }
     
     try {
+      if (!auth.currentUser) {
+        throw new Error('You must be logged in to generate scripts.');
+      }
+      const token = await auth.currentUser.getIdToken();
       const res = await fetch('/api/gemini/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ 
           leadDetails: lead, 
           language, 
