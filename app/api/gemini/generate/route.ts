@@ -3,6 +3,30 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
+    // 1. Check for Authentication Header
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: "Unauthorized: Missing or invalid token" }, { status: 401 });
+    }
+    const token = authHeader.split('Bearer ')[1];
+
+    // 2. Validate Firebase Token via REST API
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    if (!apiKey) {
+      console.error("Missing NEXT_PUBLIC_FIREBASE_API_KEY");
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+
+    const verifyRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken: token })
+    });
+
+    if (!verifyRes.ok) {
+      return NextResponse.json({ error: "Unauthorized: Invalid token" }, { status: 401 });
+    }
+
     const { leadDetails, language = 'English', generateType = 'script', agentName = 'Agent' } = await req.json();
     
     if (!process.env.GEMINI_API_KEY) {
