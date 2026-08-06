@@ -28,7 +28,8 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
     path
   };
   console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
+  // Security Fix: Do not expose detailed internal error information to the client
+  throw new Error("A database error occurred. Please try again.");
 }
 
 export const makeId = () => Math.random().toString(36).substring(2, 15);

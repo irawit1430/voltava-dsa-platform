@@ -18,3 +18,7 @@
 **Vulnerability:** The `/api/gemini/generate` endpoint, which uses a costly third-party AI API, was completely unauthenticated. Anyone could send a POST request to it and drain the API quota.
 **Learning:** Relying only on client-side UI to hide functionality doesn't protect the backend API.
 **Prevention:** Always verify authentication tokens on the server for sensitive endpoints. When `firebase-admin` is not available, the Google Identity Toolkit REST API (`accounts:lookup`) can be used to verify client ID tokens.
+## 2025-02-14 - Fix PII Leakage in Errors in handleFirestoreError
+**Vulnerability:** User details and detailed error information (including internal paths and user IDs) was thrown to the frontend in `lib/db.ts` by `handleFirestoreError`.
+**Learning:** Returning detailed server internal state to the frontend introduces leakage of sensitive system state.
+**Prevention:** In production/client-facing functions, log the detailed error internally and throw a generic error message (e.g., "A database error occurred. Please try again.").
