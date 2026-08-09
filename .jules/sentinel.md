@@ -18,3 +18,8 @@
 **Vulnerability:** The `/api/gemini/generate` endpoint, which uses a costly third-party AI API, was completely unauthenticated. Anyone could send a POST request to it and drain the API quota.
 **Learning:** Relying only on client-side UI to hide functionality doesn't protect the backend API.
 **Prevention:** Always verify authentication tokens on the server for sensitive endpoints. When `firebase-admin` is not available, the Google Identity Toolkit REST API (`accounts:lookup`) can be used to verify client ID tokens.
+
+## 2025-02-14 - Lack of input length limits for prompt generation
+**Vulnerability:** Input data (`leadDetails`, `language`, `agentName`) for the Gemini API call lacked length validation. Malicious actors could send massive JSON strings, leading to excessive token consumption (Token Exhaustion DoS) and potentially inflated billing costs.
+**Learning:** Passing unsanitized, arbitrarily large client input directly to external LLM APIs poses a severe resource exhaustion and billing risk.
+**Prevention:** Always implement strict input length limits (e.g., maximum string lengths, payload size checks) for any data that is incorporated into an LLM prompt, regardless of whether the user is authenticated.

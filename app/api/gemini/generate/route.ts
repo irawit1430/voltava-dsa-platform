@@ -22,6 +22,16 @@ export async function POST(req: NextRequest) {
 
     const { leadDetails, language = 'English', generateType = 'script', agentName = 'Agent' } = await req.json();
     
+    // Security Enhancement: Add input length limits to prevent token exhaustion DoS
+    if (
+      (language && String(language).length > 50) ||
+      (agentName && String(agentName).length > 100) ||
+      (leadDetails && JSON.stringify(leadDetails).length > 5000) ||
+      (generateType && String(generateType).length > 20)
+    ) {
+      return NextResponse.json({ error: "Input payload too large" }, { status: 400 });
+    }
+
     if (!process.env.GEMINI_API_KEY) {
       console.error("Missing GEMINI_API_KEY environment variable");
       return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
