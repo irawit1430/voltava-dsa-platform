@@ -33,6 +33,14 @@ export default function DocumentVault() {
       }, 0);
       return;
     }
+
+    // Security: Validate selectedLeadId to prevent path traversal
+    if (!/^[a-zA-Z0-9_-]+$/.test(selectedLeadId)) {
+      console.error('Security Error: Invalid lead ID format.');
+      setTimeout(() => setIsLoading(false), 0);
+      return;
+    }
+
     setTimeout(() => setIsLoading(true), 0);
     const unsubDocs = onSnapshot(query(collection(db, `leads/${selectedLeadId}/documents`), where('userId', '==', auth.currentUser?.uid)), (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -50,6 +58,14 @@ export default function DocumentVault() {
       alert('Please select a lead first');
       return;
     }
+
+    // Security: Validate selectedLeadId to prevent path traversal
+    if (!/^[a-zA-Z0-9_-]+$/.test(selectedLeadId)) {
+      alert('Security Error: Invalid lead ID format. Potential path traversal detected.');
+      e.target.value = '';
+      return;
+    }
+
     const file = e.target.files[0];
 
     // Security: Validate file type and size

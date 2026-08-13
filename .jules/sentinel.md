@@ -18,3 +18,7 @@
 **Vulnerability:** The `/api/gemini/generate` endpoint, which uses a costly third-party AI API, was completely unauthenticated. Anyone could send a POST request to it and drain the API quota.
 **Learning:** Relying only on client-side UI to hide functionality doesn't protect the backend API.
 **Prevention:** Always verify authentication tokens on the server for sensitive endpoints. When `firebase-admin` is not available, the Google Identity Toolkit REST API (`accounts:lookup`) can be used to verify client ID tokens.
+## 2026-08-13 - Path Traversal Vulnerability in Firebase Storage Upload
+**Vulnerability:** The file upload functionality in `components/DocumentVault.tsx` used unvalidated client-side state (`selectedLeadId`) to construct the Firebase Storage path (`leads/${selectedLeadId}/documents/...`) and Firestore queries. An attacker could manipulate this state to traverse directories (e.g., `../..`) and upload files to arbitrary locations or query arbitrary collections.
+**Learning:** Client-side React state is not immune to manipulation by determined attackers. Any state variable that is subsequently used to construct file paths or database queries must be strictly validated before use, even if it originally comes from a "trusted" source like a dropdown.
+**Prevention:** Always apply strict regex validation (e.g., `/^[a-zA-Z0-9_-]+$/`) to IDs or path segments before interpolating them into Storage paths or Firestore queries.
