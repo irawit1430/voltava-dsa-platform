@@ -21,6 +21,19 @@ export async function POST(req: NextRequest) {
     }
 
     const { leadDetails, language = 'English', generateType = 'script', agentName = 'Agent' } = await req.json();
+
+    if (typeof language !== 'string' || language.length > 50) {
+      return NextResponse.json({ error: "Invalid language parameter" }, { status: 400 });
+    }
+    if (typeof generateType !== 'string' || generateType.length > 20) {
+      return NextResponse.json({ error: "Invalid generateType parameter" }, { status: 400 });
+    }
+    if (typeof agentName !== 'string' || agentName.length > 100) {
+      return NextResponse.json({ error: "Invalid agentName parameter" }, { status: 400 });
+    }
+    if (typeof leadDetails !== 'object' || leadDetails === null || JSON.stringify(leadDetails).length > 2000) {
+      return NextResponse.json({ error: "Invalid leadDetails parameter" }, { status: 400 });
+    }
     
     if (!process.env.GEMINI_API_KEY) {
       console.error("Missing GEMINI_API_KEY environment variable");
