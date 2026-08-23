@@ -22,6 +22,16 @@ export async function POST(req: NextRequest) {
 
     const { leadDetails, language = 'English', generateType = 'script', agentName = 'Agent' } = await req.json();
     
+    // Security enhancement: Validate input to prevent DoS or abuse
+    if (
+      typeof language !== 'string' || language.length > 50 ||
+      typeof generateType !== 'string' || generateType.length > 50 ||
+      typeof agentName !== 'string' || agentName.length > 100 ||
+      !leadDetails || JSON.stringify(leadDetails).length > 5000
+    ) {
+      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+    }
+
     if (!process.env.GEMINI_API_KEY) {
       console.error("Missing GEMINI_API_KEY environment variable");
       return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
