@@ -18,3 +18,7 @@
 **Vulnerability:** The `/api/gemini/generate` endpoint, which uses a costly third-party AI API, was completely unauthenticated. Anyone could send a POST request to it and drain the API quota.
 **Learning:** Relying only on client-side UI to hide functionality doesn't protect the backend API.
 **Prevention:** Always verify authentication tokens on the server for sensitive endpoints. When `firebase-admin` is not available, the Google Identity Toolkit REST API (`accounts:lookup`) can be used to verify client ID tokens.
+## 2025-02-14 - Missing Authorization Rules for `callLogs` Collection
+**Vulnerability:** The Firestore database was missing authorization rules for the `callLogs` collection, which allowed any authenticated user to potentially read, modify, or delete call logs belonging to other users if they could guess the document IDs, or prevented creation entirely if default rules blocked it.
+**Learning:** Adding new collections in the frontend code (like `callLogs`) requires a corresponding update to `firestore.rules` to enforce tenant isolation and access controls.
+**Prevention:** Always verify that every Firestore collection accessed in the client code has a corresponding and strict match rule in `firestore.rules`.
