@@ -20,8 +20,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { leadDetails, language = 'English', generateType = 'script', agentName = 'Agent' } = await req.json();
+    const body = await req.json();
+    const { leadDetails, language = 'English', generateType = 'script', agentName = 'Agent' } = body;
     
+    // Security: Input validation to prevent abuse/DoS
+    if (typeof agentName !== 'string' || agentName.length > 100) {
+      return NextResponse.json({ error: "Invalid agentName" }, { status: 400 });
+    }
+    if (typeof language !== 'string' || language.length > 50) {
+      return NextResponse.json({ error: "Invalid language" }, { status: 400 });
+    }
+    if (generateType !== 'script' && generateType !== 'whatsapp') {
+      return NextResponse.json({ error: "Invalid generateType" }, { status: 400 });
+    }
+
+    const leadDetailsString = JSON.stringify(leadDetails);
+    if (!leadDetails || typeof leadDetails !== 'object' || leadDetailsString.length > 3000) {
+      return NextResponse.json({ error: "Invalid or oversized leadDetails" }, { status: 400 });
+    }
+
     if (!process.env.GEMINI_API_KEY) {
       console.error("Missing GEMINI_API_KEY environment variable");
       return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
