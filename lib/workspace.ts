@@ -20,7 +20,7 @@ export async function createCalendarEvent(title: string, description: string, st
 
   if (!response.ok) {
     const err = await response.text();
-    throw new Error(`Calendar API Error: ${err}`);
+    throw new Error("Failed to communicate with Calendar API.");
   }
   return response.json();
 }
@@ -51,7 +51,7 @@ export async function createGoogleTask(title: string, notes: string, due: string
 
   if (!response.ok) {
     const err = await response.text();
-    throw new Error(`Tasks API Error: ${err}`);
+    throw new Error("Failed to communicate with Tasks API.");
   }
   return response.json();
 }
