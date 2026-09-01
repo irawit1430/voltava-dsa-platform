@@ -18,3 +18,7 @@
 **Vulnerability:** The `/api/gemini/generate` endpoint, which uses a costly third-party AI API, was completely unauthenticated. Anyone could send a POST request to it and drain the API quota.
 **Learning:** Relying only on client-side UI to hide functionality doesn't protect the backend API.
 **Prevention:** Always verify authentication tokens on the server for sensitive endpoints. When `firebase-admin` is not available, the Google Identity Toolkit REST API (`accounts:lookup`) can be used to verify client ID tokens.
+## 2025-02-15 - Information Leakage via Error Throwing/Alerting
+**Vulnerability:** Internal system errors, stack traces, and API responses from Google Workspace or Firestore were being thrown or alerted directly to the client UI (e.g., in `components/LeadsSection.tsx` and `lib/workspace.ts`).
+**Learning:** Concatenating internal `error.message` or `response.text()` from API failures into client-facing `alert()` calls or propagated `throw new Error()` calls exposes backend internals (API endpoints, payload validation hints, or database schema) to potential attackers.
+**Prevention:** Always catch and log internal detailed errors securely on the backend or in console logs for debugging, but present only generic, sanitized error messages (e.g., "A database error occurred." or "Scheduling failed. Please try again.") to the end user.
