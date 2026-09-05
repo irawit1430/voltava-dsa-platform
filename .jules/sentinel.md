@@ -18,3 +18,7 @@
 **Vulnerability:** The `/api/gemini/generate` endpoint, which uses a costly third-party AI API, was completely unauthenticated. Anyone could send a POST request to it and drain the API quota.
 **Learning:** Relying only on client-side UI to hide functionality doesn't protect the backend API.
 **Prevention:** Always verify authentication tokens on the server for sensitive endpoints. When `firebase-admin` is not available, the Google Identity Toolkit REST API (`accounts:lookup`) can be used to verify client ID tokens.
+## 2026-09-05 - Missing Security Headers in Next.js
+**Vulnerability:** The application was missing standard HTTP security headers (like Strict-Transport-Security, X-Frame-Options, X-Content-Type-Options).
+**Learning:** Next.js does not apply these secure headers by default; they must be manually configured in `next.config.ts`.
+**Prevention:** Always implement an `async headers()` configuration in `next.config.ts` that injects baseline security headers across all routes.
