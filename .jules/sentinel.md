@@ -18,3 +18,7 @@
 **Vulnerability:** The `/api/gemini/generate` endpoint, which uses a costly third-party AI API, was completely unauthenticated. Anyone could send a POST request to it and drain the API quota.
 **Learning:** Relying only on client-side UI to hide functionality doesn't protect the backend API.
 **Prevention:** Always verify authentication tokens on the server for sensitive endpoints. When `firebase-admin` is not available, the Google Identity Toolkit REST API (`accounts:lookup`) can be used to verify client ID tokens.
+## 2025-02-14 - Missing Input Validation / Payload Size Limits on API Endpoints
+**Vulnerability:** The `/api/gemini/generate` endpoint accepted user inputs (`language`, `agentName`, `generateType`, and `leadDetails`) without any type or length validation, exposing the application to Denial of Service (DoS) attacks and potential financial impact by consuming excessive third-party AI API tokens.
+**Learning:** Destructuring parameters without immediate type and length validation allows attackers to send massive string payloads.
+**Prevention:** Always implement native JavaScript type checks (e.g., `typeof val === 'string'`) and strict length boundaries (e.g., `val.length > 50`) on all incoming request parameters before processing them or passing them to expensive external APIs.
